@@ -81,7 +81,7 @@ Cada peer usa un archivo `config.json` con:
 ## 👥 Integrantes
 - 👩‍💻 **Daniel Cardona Gonzalez** → Diseño de arquitectura y APIs.  
 - 👨‍💻 **Juan José Tamayo Ospina** → Implementación núcleo y concurrencia.  
-- 👨‍💻 **María Lucía Cadavid** → Cliente, despliegue y pruebas en AWS.  
+- 👨‍💻 **María Lucía Cadavid Martínez** → Cliente, despliegue y pruebas en AWS.  
 
 ---
 
