@@ -3,6 +3,7 @@ import os
 from fastapi import FastAPI
 from fastapi import Query
 from fastapi.responses import FileResponse
+from fastapi import UploadFile, File
 
 # Función para cargar configuración ----------
 def load_config(path: str):
@@ -43,11 +44,23 @@ async def locate_file(filename: str = Query(...)):
         return {"found": True, "filename": filename, "download_url": download_url}
     return {"found": False, "filename": filename}
 
-# Se agrega un dummy para simular la descarga        
+# Correcion al commit anterior, esta funcion realmente funciona y descarga los archvios   
 
 @app.get("/download/{filename}")
-def download_file(filename: str):
+async def download_file(filename: str):
     file_path = os.path.join(DIRECTORY, filename)
     if os.path.exists(file_path):
         return FileResponse(file_path, filename=filename)
     return {"error": "File not found"}
+
+# Se agrega un metodo para subir un archivo a un peer
+
+@app.post("/upload")
+async def upload_file(file: UploadFile = File(...)):
+    file_path = os.path.join(DIRECTORY, file.filename)
+    try:
+        with open(file_path, "wb") as f:
+            f.write(await file.read())
+        return {"status": "ok", "filename": file.filename}
+    except Exception as e:
+        return {"error": str(e)}
