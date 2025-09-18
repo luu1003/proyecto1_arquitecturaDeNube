@@ -29,29 +29,25 @@ def read_root():
 
 # endpoint /files ----------
 @app.get("/files")
-def list_files():
-    try:
-        files = os.listdir(DIRECTORY)
-        # Filtrar solo archivos (no carpetas)
-        files = [f for f in files if os.path.isfile(os.path.join(DIRECTORY, f))]
-        return {"directory": DIRECTORY, "files": files}
-    except Exception as e:
-        return {"error": str(e)}
+async def list_files():
+    files = os.listdir(DIRECTORY)
+    files = [f for f in files if os.path.isfile(os.path.join(DIRECTORY, f))]
+    return {"directory": DIRECTORY, "files": files}
 
-# Nuevo endpoint /locate ----------
+# endpoint /locate ----------
 @app.get("/locate")
-def locate_file(filename: str = Query(..., description="Nombre del archivo a buscar")):
-    try:
-        files = os.listdir(DIRECTORY)
-        if filename in files:
-            # Construir URL de descarga
-            download_url = f"http://{config['ip']}:{config['port_rest']}/download/{filename}"
-            return {
-                "found": True,
-                "filename": filename,
-                "download_url": download_url
-            }
-        else:
-            return {"found": False, "filename": filename}
-    except Exception as e:
-        return {"error": str(e)}
+async def locate_file(filename: str = Query(...)):
+    files = os.listdir(DIRECTORY)
+    if filename in files:
+        download_url = f"http://{config['ip']}:{config['port_rest']}/download/{filename}"
+        return {"found": True, "filename": filename, "download_url": download_url}
+    return {"found": False, "filename": filename}
+
+# Se agrega un dummy para simular la descarga        
+
+@app.get("/download/{filename}")
+def download_file(filename: str):
+    file_path = os.path.join(DIRECTORY, filename)
+    if os.path.exists(file_path):
+        return FileResponse(file_path, filename=filename)
+    return {"error": "File not found"}
