@@ -49,6 +49,35 @@ Cada peer usa un archivo `config.json` con:
 
 ---
 
+## ▶️ Running the Client
+
+To interact with a peer and list its files, you can use the command-line client.
+
+1.  **Install dependencies:**
+
+    Navigate to the `Implementacion_local` directory and install the required Python packages.
+
+    ```bash
+    cd Implementacion_local
+    pip install -r requirements.txt
+    ```
+
+2.  **Run the client:**
+
+    From the `Implementacion_local` directory, run the client script and specify the peer's host and port if they are different from the default (127.0.0.1:5000).
+
+    ```bash
+    python src/client/main.py --host <PEER_IP> --port <PEER_PORT>
+    ```
+
+    For example, to connect to a peer running on `127.0.0.1` at port `5001`, you would use:
+
+    ```bash
+    python src/client/main.py --host 127.0.0.1 --port 5001
+    ```
+
+---
+
 ## 📂 Estructura del repositorio
 # proyecto1_arquitecturaDeNube
 │── src/ # Código fuente
