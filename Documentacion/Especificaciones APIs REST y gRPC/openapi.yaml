@@ -1,0 +1,233 @@
+openapi: 3.0.3
+info:
+  title: P2P File Sharing API
+  version: 1.0.0
+  description: >
+    API REST para registro de peers, consulta de archivos y localización en red P2P.
+    Incluye endpoints dummy y reales de upload/download.
+
+servers:
+  - url: http://{host}:{port}/api/v1
+    variables:
+      host:
+        default: 127.0.0.1
+      port:
+        default: "5000"
+
+paths:
+  /register:
+    post:
+      summary: Registrar un nuevo peer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                peer_id:
+                  type: string
+                ip:
+                  type: string
+                puerto:
+                  type: integer
+                archivos:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      nombre:
+                        type: string
+                      url:
+                        type: string
+      responses:
+        "200":
+          description: Registro exitoso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  peers_conocidos:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        peer_id:
+                          type: string
+                        ip:
+                          type: string
+                        puerto:
+                          type: integer
+
+  /peers:
+    get:
+      summary: Consultar peers registrados
+      responses:
+        "200":
+          description: Lista de peers conocidos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  peers:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        peer_id:
+                          type: string
+                        ip:
+                          type: string
+                        puerto:
+                          type: integer
+
+  /files:
+    get:
+      summary: Consultar índice de archivos locales
+      responses:
+        "200":
+          description: Lista de archivos disponibles
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  archivos:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        nombre:
+                          type: string
+                        url:
+                          type: string
+
+  /locate:
+    get:
+      summary: Localizar un archivo específico
+      parameters:
+        - name: nombre
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Resultado de la localización
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resultado:
+                    type: string
+                  peer:
+                    type: object
+                    properties:
+                      peer_id:
+                        type: string
+                      ip:
+                        type: string
+                      puerto:
+                        type: integer
+                  url:
+                    type: string
+
+  /dummy/download/{archivo}:
+    get:
+      summary: Descargar archivo simulado (Dummy)
+      parameters:
+        - name: archivo
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Descarga simulada exitosa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  mensaje:
+                    type: string
+
+  /dummy/upload:
+    post:
+      summary: Subir archivo simulado (Dummy)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+                contenido:
+                  type: string
+      responses:
+        "200":
+          description: Carga simulada exitosa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  mensaje:
+                    type: string
+
+  /download/{archivo}:
+    get:
+      summary: Descargar archivo real
+      parameters:
+        - name: archivo
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Stream binario del archivo
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+
+  /upload:
+    post:
+      summary: Subir archivo real
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: Carga de archivo exitosa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  mensaje:
+                    type: string
+                  archivo:
+                    type: string

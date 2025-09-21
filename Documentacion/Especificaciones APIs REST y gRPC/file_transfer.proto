@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package p2p;
+
+// Servicio principal de transferencia de archivos
+service FileTransfer {
+  // ---- Servicios Dummy (simulación) ----
+  rpc DummyDownload (FileRequest) returns (stream FileChunk);
+  rpc DummyUpload (stream FileChunk) returns (UploadStatus);
+
+  // ---- Servicios Reales ----
+  rpc Download (FileRequest) returns (stream FileChunk);
+  rpc Upload (stream FileChunk) returns (UploadStatus);
+}
+
+// Solicitud de archivo
+message FileRequest {
+  string filename = 1;
+}
+
+// Chunk de archivo (real o dummy)
+message FileChunk {
+  bytes content = 1;
+  int32 chunk_number = 2;
+}
+
+// Estado de carga
+message UploadStatus {
+  bool success = 1;
+  string message = 2;
+}
