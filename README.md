@@ -78,6 +78,33 @@ To interact with a peer and list its files, you can use the command-line client.
 
 ---
 
+## ▶️ Running the Server
+
+To start a peer server, you need to run the FastAPI application using `uvicorn`.
+
+1.  **Install dependencies:**
+
+    If you haven't already, navigate to the `Implementacion_local` directory and install the required Python packages.
+
+    ```bash
+    cd Implementacion_local
+    pip install -r requirements.txt
+    ```
+
+2.  **Run the server:**
+
+    From the `Implementacion_local` directory, run the server. You can specify which configuration file to use by setting the `CONFIG_PATH` environment variable.
+
+    ```bash
+    CONFIG_PATH=config/peer1.json uvicorn src.server.main:app --host 0.0.0.0 --port 5000
+    ```
+
+    -   `CONFIG_PATH`: Specifies the configuration file for the peer (e.g., `config/peer1.json`).
+    -   `--host`: The IP address to bind to.
+    -   `--port`: The port to listen on. This should match the `port_rest` in your config file.
+
+---
+
 ## 📂 Estructura del repositorio
 # proyecto1_arquitecturaDeNube
 │── src/ # Código fuente
