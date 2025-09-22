@@ -1,23 +1,31 @@
 import json
 import os
-from fastapi import FastAPI
-from fastapi import Query
-from fastapi.responses import FileResponse
-from fastapi import UploadFile, File
 
-# Función para cargar configuración ----------
+from fastapi import FastAPI, Query, UploadFile, File, Body
+from fastapi.responses import FileResponse
+
+# --------- Función para cargar configuración ----------
 def load_config(path: str):
     with open(path, "r") as f:
         return json.load(f)
 
-# Cargar configuración ---------
-
+# --------- Cargar configuración ---------
 CONFIG_PATH = os.getenv("CONFIG_PATH", "config/peer1.json")
 config = load_config(CONFIG_PATH)
 
 DIRECTORY = config["directory"]
+LOCAL_PEER_NAME = config.get("name", "peer1")  # nombre de este peer
+LOCAL_PEER_URL = config.get("url", f"http://{config['ip']}:{config['port_rest']}")
 
-# Servidor FastAPI ---------
+# --------- Tabla de archivos por peer ---------
+peer_files = {
+    LOCAL_PEER_NAME: [
+        f for f in os.listdir(DIRECTORY)
+        if os.path.isfile(os.path.join(DIRECTORY, f))
+    ]
+}
+
+# --------- Servidor FastAPI ---------
 app = FastAPI()
 
 @app.get("/")
@@ -27,40 +35,111 @@ def read_root():
         "config": config
     }
 
-
-# endpoint /files ----------
+# --------- Endpoint /files ----------
 @app.get("/files")
 async def list_files():
-    files = os.listdir(DIRECTORY)
-    files = [f for f in files if os.path.isfile(os.path.join(DIRECTORY, f))]
-    return {"directory": DIRECTORY, "files": files}
+    """Listar los archivos conocidos por cada peer"""
+    return {"peer_files": peer_files}
 
-# endpoint /locate ----------
+# --------- Endpoint /locate ----------
 @app.get("/locate")
 async def locate_file(filename: str = Query(...)):
-    files = os.listdir(DIRECTORY)
-    if filename in files:
-        download_url = f"http://{config['ip']}:{config['port_rest']}/download/{filename}"
-        return {"found": True, "filename": filename, "download_url": download_url}
+    """
+    Localizar un archivo en la red de peers.
+    Si está en el peer local, devuelve su propia URL.
+    Si está en otro peer, busca la URL en la lista de peers conocidos.
+    """
+    sources = []
+
+    for peer, files in peer_files.items():
+        if filename in files:
+            # Archivo en este peer
+            if peer == LOCAL_PEER_NAME:
+                sources.append({
+                    "peer": peer,
+                    "download_url": f"{LOCAL_PEER_URL}/download/{filename}"
+                })
+            # Archivo en peers remotos
+            else:
+                for p in config.get("peers", []):
+                    if p.get("name") == peer:
+                        sources.append({
+                            "peer": peer,
+                            "download_url": f"{p['url']}/download/{filename}"
+                        })
+
+    if sources:
+        return {
+            "found": True,
+            "filename": filename,
+            "sources": sources
+        }
+
     return {"found": False, "filename": filename}
 
-# Correcion al commit anterior, esta funcion realmente funciona y descarga los archvios   
-
+# --------- Endpoint /download ----------
 @app.get("/download/{filename}")
 async def download_file(filename: str):
+    """Descargar un archivo desde este peer"""
     file_path = os.path.join(DIRECTORY, filename)
     if os.path.exists(file_path):
         return FileResponse(file_path, filename=filename)
     return {"error": "File not found"}
 
-# Se agrega un metodo para subir un archivo a un peer
-
+# --------- Endpoint /upload ----------
 @app.post("/upload")
 async def upload_file(file: UploadFile = File(...)):
+    """
+    Subir un archivo al peer local.
+    Se guarda en el directorio compartido y se registra en peer_files.
+    """
     file_path = os.path.join(DIRECTORY, file.filename)
     try:
         with open(file_path, "wb") as f:
             f.write(await file.read())
+        if file.filename not in peer_files[LOCAL_PEER_NAME]:
+            peer_files[LOCAL_PEER_NAME].append(file.filename)
         return {"status": "ok", "filename": file.filename}
     except Exception as e:
         return {"error": str(e)}
+
+# --------- Endpoint /add_peer ----------
+@app.post("/add_peer")
+async def add_peer(peer: dict = Body(...)):
+    """
+    Registrar un peer remoto en la lista de peers conocidos.
+    Requiere JSON: {"name": "peer2", "url": "http://127.0.0.1:5002"}
+    """
+    if "name" not in peer or "url" not in peer:
+        return {"error": "El peer debe tener 'name' y 'url'"}
+    config.setdefault("peers", [])
+    config["peers"].append(peer)
+    return {"status": "ok", "peers": config["peers"]}
+
+# --------- Endpoint /add_file ----------
+@app.post("/add_file")
+async def add_file(data: dict = Body(...)):
+    """
+    Registrar un archivo en un peer específico (simulación).
+    Requiere JSON: {"peer": "peer2", "filename": "video.mp4"}
+    """
+    peer = data.get("peer")
+    filename = data.get("filename")
+
+    if not peer or not filename:
+        return {"error": "Se requieren 'peer' y 'filename'"}
+
+    if peer not in peer_files:
+        peer_files[peer] = []
+
+    if filename not in peer_files[peer]:
+        peer_files[peer].append(filename)
+        return {"status": "ok", "peer": peer, "files": peer_files[peer]}
+    else:
+        return {"status": "ya existe", "peer": peer, "files": peer_files[peer]}
+
+# --------- Endpoint /peers ----------
+@app.get("/peers")
+async def list_peers():
+    """Listar los peers conocidos por este nodo"""
+    return {"peers": config.get("peers", [])}
