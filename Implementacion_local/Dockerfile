@@ -1,19 +1,25 @@
-# Use an official Python runtime as a parent image
-FROM python:3.9
+# Imagen base con Python
+FROM public.ecr.aws/amazonlinux/amazonlinux:2023
 
-# Set the working directory in the container
+# Instalar Python y pip
+RUN dnf install -y python3.11 python3.11-pip && \
+    alternatives --install /usr/bin/python python /usr/bin/python3.11 1 && \
+    alternatives --install /usr/bin/pip pip /usr/bin/pip3.11 1
+
+# Crear directorio de la app
 WORKDIR /app
 
-# Copy the requirements file and install dependencies
+# Copiar requerimientos primero (para aprovechar caché de Docker)
 COPY requirements.txt .
-RUN pip install --upgrade pip setuptools wheel
+
+# Instalar dependencias del proyecto
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of the application code
+# Copiar el resto del código
 COPY . .
 
-# Expose the port the app runs on
-EXPOSE 5000
+# Exponer el puerto (ejemplo FastAPI con uvicorn en 5001)
+EXPOSE 5001
 
-# Define the command to run the application
-CMD ["uvicorn", "src.server.main:app", "--host", "0.0.0.0", "--port", "5000"]
+# Comando para ejecutar el servidor
+CMD ["uvicorn", "src.server.main:app", "--host", "0.0.0.0", "--port", "5001"]
