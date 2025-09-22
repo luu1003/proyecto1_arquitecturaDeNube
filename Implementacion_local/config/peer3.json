@@ -1,0 +1,8 @@
+{
+  "ip": "0.0.0.0",
+  "port_rest": 5003,
+  "port_grpc": 5004,
+  "directory": "./shared_files_peer3",
+  "peer_main": "http://127.0.0.1:5000",
+  "peer_backup": "http://127.0.0.1:5002"
+}

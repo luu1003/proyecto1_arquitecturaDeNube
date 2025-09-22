@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  peer1:
+    build: .
+    container_name: peer1
+    environment:
+      - CONFIG_PATH=config/peer1.json
+    ports:
+      - "5001:5000"
+    volumes:
+      - ./shared_files_peer1:/app/shared_files_peer1
+      - ./config/peer1.json:/app/config/peer1.json
+
+  peer2:
+    build: .
+    container_name: peer2
+    environment:
+      - CONFIG_PATH=config/peer2.json
+    ports:
+      - "5002:5000"
+    volumes:
+      - ./shared_files_peer2:/app/shared_files_peer2
+      - ./config/peer2.json:/app/config/peer2.json
+
+  peer3:
+    build: .
+    container_name: peer3
+    environment:
+      - CONFIG_PATH=config/peer3.json
+    ports:
+      - "5003:5000"
+    volumes:
+      - ./shared_files_peer3:/app/shared_files_peer3
+      - ./config/peer3.json:/app/config/peer3.json
