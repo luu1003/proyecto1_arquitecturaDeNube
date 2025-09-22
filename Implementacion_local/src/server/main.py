@@ -12,7 +12,7 @@ def load_config(path: str):
 
 # Cargar configuración ---------
 
-CONFIG_PATH = os.getenv("CONFIG_PATH", "config/peer1.json")
+CONFIG_PATH = os.getenv("CONFIG_PATH", "config/peer2.json")
 config = load_config(CONFIG_PATH)
 
 DIRECTORY = config["directory"]
