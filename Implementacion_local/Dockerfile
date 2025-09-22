@@ -18,8 +18,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copiar el resto del código
 COPY . .
 
-# Exponer el puerto (ejemplo FastAPI con uvicorn en 5001)
-EXPOSE 5001
+# Exponer el puerto (ejemplo FastAPI con uvicorn en 5000)
+EXPOSE 5000
 
 # Comando para ejecutar el servidor
-CMD ["uvicorn", "src.server.main:app", "--host", "0.0.0.0", "--port", "5001"]
+CMD ["uvicorn", "src.server.main:app", "--host", "0.0.0.0", "--port", "5000"]
