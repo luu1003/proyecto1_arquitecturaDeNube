@@ -27,6 +27,9 @@ class FileServiceServicer(grpc_pb2_grpc.FileServiceServicer):
 
     def DownloadFile(self, request, context):
         """Envía el archivo en chunks"""
+
+        refresh_peers()
+
         file_path = os.path.join(DIRECTORY, request.filename)
         if os.path.exists(file_path):
             chunk_size = 1024 * 64  # 64 KB
@@ -68,6 +71,9 @@ class FileServiceServicer(grpc_pb2_grpc.FileServiceServicer):
 
     def UploadFile(self, request_iterator, context):
         """Recibe un archivo en chunks y lo guarda en DIRECTORY"""
+
+        refresh_peers()
+
         filename = None
         try:
             for chunk in request_iterator:
@@ -89,6 +95,29 @@ class FileServiceServicer(grpc_pb2_grpc.FileServiceServicer):
 
         except Exception as e:
             return grpc_pb2.UploadStatus(success=False, message=str(e))
+
+
+def refresh_peers():
+    """
+    Refresca los archivos de todos los peers conocidos.
+    """
+    # 1. Actualizar archivos locales
+    peer_files[LOCAL_PEER_NAME] = [
+        f for f in os.listdir(DIRECTORY) if os.path.isfile(os.path.join(DIRECTORY, f))
+    ]
+
+    # 2. Actualizar info de los peers remotos
+    for peer in config.get("peers", []):
+        try:
+            url = f"http://{peer['ip']}:{peer['port_rest']}/files"
+            resp = requests.get(url, timeout=5)
+            if resp.status_code == 200:
+                remote_files = resp.json().get("peer_files", {}).get(peer["name"], [])
+                peer_files[peer["name"]] = remote_files
+        except Exception:
+            continue  # ignorar peers que no respondan
+
+
 
 
 # ----------------- Servidor gRPC -----------------
