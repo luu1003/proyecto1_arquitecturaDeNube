@@ -1,0 +1,11 @@
+{
+  "name": "peer3",
+  "ip": "0.0.0.0",
+  "port_rest": 5000,
+  "port_grpc": 50053,
+  "url": "http://107.23.105.160:5004",
+  "directory": "peer3/server/shared_files_peer3",
+  "peers": [
+    { }
+  ]
+}

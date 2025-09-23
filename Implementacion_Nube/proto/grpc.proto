@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package file_service;
+
+service FileService {
+  // Descarga un archivo en chunks
+  rpc DownloadFile(FileRequest) returns (stream FileChunk);
+
+  // Sube un archivo en chunks
+  rpc UploadFile(stream FileChunk) returns (UploadStatus);
+}
+
+message FileRequest {
+  string filename = 1;
+}
+
+message FileChunk {
+  bytes content = 1;        // Datos del archivo
+  string filename = 2;      // Nombre del archivo
+  int64 chunk_number = 3;   // Número de chunk (opcional)
+}
+
+message UploadStatus {
+  bool success = 1;
+  string message = 2;
+}

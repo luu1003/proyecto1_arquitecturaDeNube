@@ -1,0 +1,11 @@
+{
+  "name": "peer1",
+  "ip": "0.0.0.0",
+  "port_rest": 5000,
+  "port_grpc": 50051,
+  "url": "http://54.174.195.157:5001",
+  "directory": "peer1/server/shared_files_peer1",
+  "peers": [
+    {"name":"peer2","url":"http://54.174.195.157:5002" }
+  ]
+}

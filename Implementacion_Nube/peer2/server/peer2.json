@@ -1,0 +1,11 @@
+{
+  "name": "peer2",
+  "ip": "0.0.0.0",
+  "port_rest": 5000,
+  "port_grpc": 50052,
+  "url": "http://127.0.0.1:5002",
+  "directory": "peer2/server/shared_files_peer2",
+  "peers": [
+    { }
+  ]
+}

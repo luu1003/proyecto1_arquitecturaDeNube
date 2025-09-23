@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  peer1:
+    build: .
+    command: sh -c "python peer1/server/grpc-server.py & uvicorn peer1.server.main:app --host 0.0.0.0 --port 5000"
+    container_name: peer1
+    environment:
+      - CONFIG_PATH=peer1/server/peer1.json
+    ports:
+      - "5001:5000"
+      - "50051:50050"
+    volumes:
+      - ./peer1/server/shared_files_peer1:/app/peer1/server/shared_files_peer1
+      - ./peer1/server/peer1.json:/app/peer1/server/peer1.json
+
+  peer2:
+    build: .
+    command: sh -c "python peer2/server/grpc-server.py & uvicorn peer2.server.main:app --host 0.0.0.0 --port 5000"
+    container_name: peer2
+    environment:
+      - CONFIG_PATH=peer2/server/peer2.json
+    ports:
+      - "5002:5000"
+      - "50052:50050"
+    volumes:
+      - ./peer2/server/shared_files_peer2:/app/peer2/server/shared_files_peer2
+      - ./peer2/server/peer2.json:/app/peer2/server/peer2.json
+
+  peer3:
+    build: .
+    command: sh -c "python peer3/server/grpc-server.py & uvicorn peer3.server.main:app --host 0.0.0.0 --port 5000"
+    container_name: peer3
+    environment:
+      - CONFIG_PATH=peer3/server/peer3.json
+    ports:
+      - "5003:5000"
+      - "50053:50050"
+    volumes:
+      - ./peer3/server/shared_files_peer3:/app/peer3/server/shared_files_peer3
+      - ./peer3/server/peer3.json:/app/peer3/server/peer3.json
+
+  peer4:
+    build: .
+    command: sh -c "python peer4/server/grpc-server.py & uvicorn peer4.server.main:app --host 0.0.0.0 --port 5000"
+    container_name: peer4
+    environment:
+      - CONFIG_PATH=peer4/server/peer4.json
+    ports:
+      - "5004:5000"
+      - "50054:50050"
+    volumes:
+      - ./peer4/server/shared_files_peer4:/app/peer4/server/shared_files_peer4
+      - ./peer4/server/peer4.json:/app/peer4/server/peer4.json
