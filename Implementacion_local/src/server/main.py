@@ -102,19 +102,8 @@ async def download_file(filename: str):
         else:
             return Response(content=json.dumps({"error": "Archivo no encontrado localmente"}), status_code=404, media_type="application/json")
 
-    # Si es remota, descargar y transmitir
-    try:
-        async with httpx.AsyncClient() as client:
-            req = client.build_request("GET", download_url)
-            r = await client.send(req, stream=True)
-            r.raise_for_status()  # Lanza excepción si hay error HTTP
-
-            return StreamingResponse(r.aiter_bytes(), media_type=r.headers.get("content-type"))
-
-    except httpx.HTTPStatusError as e:
-        return Response(content=json.dumps({"error": f"Fallo al descargar desde el peer: {e}"}), status_code=e.response.status_code, media_type="application/json")
-    except Exception as e:
-        return Response(content=json.dumps({"error": f"Un error inesperado ocurrio: {str(e)}"}), status_code=500, media_type="application/json")
+    # Si es remota, descargar y transmitir usando el generador
+    return StreamingResponse(_stream_remote_file(download_url), media_type="application/octet-stream")
 
 # --------- Endpoint /upload ----------
 @app.post("/upload")
@@ -173,3 +162,22 @@ async def add_file(data: dict = Body(...)):
 async def list_peers():
     """Listar los peers conocidos por este nodo"""
     return {"peers": config.get("peers", [])}
+
+# --------- Helper para streaming ----------
+async def _stream_remote_file(url: str):
+    """
+    Un generador asíncrono para descargar y transmitir un archivo desde una URL.
+    Maneja el ciclo de vida del cliente httpx para el streaming.
+    """
+    try:
+        async with httpx.AsyncClient() as client:
+            async with client.stream("GET", url) as r:
+                r.raise_for_status()
+                async for chunk in r.aiter_bytes():
+                    yield chunk
+    except httpx.HTTPStatusError as e:
+        error_message = json.dumps({"error": f"Failed to download file from peer: {e}"})
+        yield error_message.encode('utf-8')
+    except Exception as e:
+        error_message = json.dumps({"error": f"An unexpected error occurred: {str(e)}"})
+        yield error_message.encode('utf-8')
