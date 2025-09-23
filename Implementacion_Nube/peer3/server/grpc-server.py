@@ -3,6 +3,7 @@ from concurrent import futures
 import grpc
 import grpc_pb2
 import grpc_pb2_grpc
+import requests
 
 # ----------------- Configuración -----------------
 def load_config(path: str):
