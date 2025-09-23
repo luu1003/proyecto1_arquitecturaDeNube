@@ -1,8 +1,9 @@
 import json
 import os
+import httpx
 
-from fastapi import FastAPI, Query, UploadFile, File, Body
-from fastapi.responses import FileResponse
+from fastapi import FastAPI, Query, UploadFile, File, Body, Response
+from fastapi.responses import FileResponse, StreamingResponse
 
 # --------- Función para cargar configuración ----------
 def load_config(path: str):
@@ -80,11 +81,40 @@ async def locate_file(filename: str = Query(...)):
 # --------- Endpoint /download ----------
 @app.get("/download/{filename}")
 async def download_file(filename: str):
-    """Descargar un archivo desde este peer"""
-    file_path = os.path.join(DIRECTORY, filename)
-    if os.path.exists(file_path):
-        return FileResponse(file_path, filename=filename)
-    return {"error": "File not found"}
+    """
+    Descargar un archivo.
+    Primero lo localiza en la red y luego lo descarga desde la URL obtenida.
+    """
+    location_data = await locate_file(filename)
+
+    if not location_data.get("found"):
+        return Response(content=json.dumps({"error": "Archivo no encontrado"}), status_code=404, media_type="application/json")
+
+    # Tomar la primera fuente disponible
+    source = location_data["sources"][0]
+    download_url = source["download_url"]
+
+    # Si la URL es local, servir el archivo directamente
+    if source["peer"] == LOCAL_PEER_NAME:
+        file_path = os.path.join(DIRECTORY, filename)
+        if os.path.exists(file_path):
+            return FileResponse(file_path, filename=filename)
+        else:
+            return Response(content=json.dumps({"error": "Archivo no encontrado localmente"}), status_code=404, media_type="application/json")
+
+    # Si es remota, descargar y transmitir
+    try:
+        async with httpx.AsyncClient() as client:
+            req = client.build_request("GET", download_url)
+            r = await client.send(req, stream=True)
+            r.raise_for_status()  # Lanza excepción si hay error HTTP
+
+            return StreamingResponse(r.aiter_bytes(), media_type=r.headers.get("content-type"))
+
+    except httpx.HTTPStatusError as e:
+        return Response(content=json.dumps({"error": f"Fallo al descargar desde el peer: {e}"}), status_code=e.response.status_code, media_type="application/json")
+    except Exception as e:
+        return Response(content=json.dumps({"error": f"Un error inesperado ocurrio: {str(e)}"}), status_code=500, media_type="application/json")
 
 # --------- Endpoint /upload ----------
 @app.post("/upload")
