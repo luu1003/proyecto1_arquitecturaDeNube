@@ -5,6 +5,13 @@ import grpc_pb2
 import grpc_pb2_grpc
 
 # ----------------- Configuración -----------------
+def load_config(path: str):
+    with open(path, "r") as f:
+        return json.load(f)
+
+CONFIG_PATH = os.getenv("CONFIG_PATH", "../server/peer4.json")
+config = load_config(CONFIG_PATH)
+
 DIRECTORY = "peer2/server/shared_files_peer2"  # Cambia a tu carpeta de peer
 LOCAL_PEER_NAME = "peer2"
 
@@ -15,27 +22,48 @@ peer_files = {
     ]
 }
 
-# ----------------- Servicio gRPC -----------------
 class FileServiceServicer(grpc_pb2_grpc.FileServiceServicer):
 
     def DownloadFile(self, request, context):
         """Envía el archivo en chunks"""
         file_path = os.path.join(DIRECTORY, request.filename)
-        if not os.path.exists(file_path):
-            context.set_details("File not found")
-            context.set_code(grpc.StatusCode.NOT_FOUND)
+        if os.path.exists(file_path):
+            chunk_size = 1024 * 64  # 64 KB
+            chunk_number = 0
+            with open(file_path, "rb") as f:
+                while chunk := f.read(chunk_size):
+                    yield grpc_pb2.FileChunk(
+                        filename=request.filename,
+                        content=chunk,
+                        chunk_number=chunk_number
+                    )
+                    chunk_number += 1
             return
 
-        chunk_size = 1024 * 64  # 64 KB
-        chunk_number = 0
-        with open(file_path, "rb") as f:
-            while chunk := f.read(chunk_size):
-                yield grpc_pb2.FileChunk(
-                    filename=request.filename,
-                    content=chunk,
-                    chunk_number=chunk_number
-                )
-                chunk_number += 1
+        # No está local → flooding a otros peers
+
+        for peer in config.get("peers", []):
+            try:
+                target = f"{peer['ip']}:{peer['port_grpc']}"
+                with grpc.insecure_channel(target) as channel:
+                    stub = grpc_pb2_grpc.FileServiceStub(channel)
+                    response_stream = stub.DownloadFile(
+                        grpc_pb2.FileRequest(filename=request.filename),
+                        timeout=10
+                    )
+
+                    # Proxy: retransmitimos los chunks de ese peer
+                    for chunk in response_stream:
+                        yield chunk
+                    return  
+            except Exception as e:
+                # Si un peer falla, seguimos probando con el siguiente
+                continue
+
+    #  Ningún peer lo tiene
+    context.set_details("File not found in network")
+    context.set_code(grpc.StatusCode.NOT_FOUND)
+    return
 
     def UploadFile(self, request_iterator, context):
         """Recibe un archivo en chunks y lo guarda en DIRECTORY"""
@@ -60,6 +88,7 @@ class FileServiceServicer(grpc_pb2_grpc.FileServiceServicer):
 
         except Exception as e:
             return grpc_pb2.UploadStatus(success=False, message=str(e))
+
 
 
 # ----------------- Servidor gRPC -----------------
