@@ -61,10 +61,10 @@ class FileServiceServicer(grpc_pb2_grpc.FileServiceServicer):
                 # Si un peer falla, seguimos probando con el siguiente
                 continue
 
-    #  Ningún peer lo tiene
-    context.set_details("File not found in network")
-    context.set_code(grpc.StatusCode.NOT_FOUND)
-    return
+        #  Ningún peer lo tiene
+        context.set_details("File not found in network")
+        context.set_code(grpc.StatusCode.NOT_FOUND)
+        return
 
     def UploadFile(self, request_iterator, context):
         """Recibe un archivo en chunks y lo guarda en DIRECTORY"""
