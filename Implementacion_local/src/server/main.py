@@ -103,7 +103,7 @@ async def download_file(filename: str):
             return Response(content=json.dumps({"error": "Archivo no encontrado localmente"}), status_code=404, media_type="application/json")
 
     # Si es remota, descargar y transmitir usando el generador
-    return StreamingResponse(_stream_remote_file(download_url), media_type="application/octet-stream")
+    return StreamingResponse(_stream_remote_file(download_url), media_type="text/plain")
 
 # --------- Endpoint /upload ----------
 @app.post("/upload")
