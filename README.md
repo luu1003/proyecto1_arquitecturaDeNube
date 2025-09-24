@@ -44,6 +44,8 @@
 
 ## ⚙️ Usar el sistema Implementacion_Nube
 
+La implementacion de aws se realizo desde la cuenta de Maria Lucia Cadavid Martinez con el correo: maria.cadavidm@upb.edu.co
+
 En aws se pueden realizar los siguiente comandos:
 
 git clone https://github.com/luu1003/proyecto1_arquitecturaDeNube.git
