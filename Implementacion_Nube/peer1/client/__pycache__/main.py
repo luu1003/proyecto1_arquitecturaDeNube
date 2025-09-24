@@ -145,7 +145,7 @@ if __name__ == "__main__":
     parser.add_argument("--port", type=int, default=5000, help="Puerto del peer.")
     parser.add_argument("--action", required=True,
                         choices=["status", "list", "network_list", "locate", "download_http", "download_grpc",
-                                 "upload_http", "upload_grpc"],
+                                "upload_http", "upload_grpc", "add_peer"],  
                         help="Acción a realizar.")
     parser.add_argument("--filename", help="Nombre del archivo para locate/download.")
     parser.add_argument("--filepath", help="Ruta del archivo para upload.")
