@@ -87,7 +87,7 @@ def upload_file_http(host: str, port: int, filepath: str):
 
 
 # ----------------- gRPC File Transfer -----------------
-def download_file_grpc(peer_host, peer_port, filename, save_dir="../../server/shared_files_peer2"):
+def download_file_grpc(peer_host, peer_port, filename, save_dir="downloads"):
     """Descarga un archivo usando gRPC en chunks."""
     os.makedirs(save_dir, exist_ok=True)
     channel = grpc.insecure_channel(f"{peer_host}:{peer_port}")
@@ -152,7 +152,7 @@ if __name__ == "__main__":
     parser.add_argument("--grpc_port", type=int, default=50052, help="Puerto gRPC del peer.")
     parser.add_argument("--peer_name", help="Nombre del peer a agregar.")
     parser.add_argument("--peer_url", help="IP del peer a agregar.")
-    parser.add_argument("--peer_grpc", type=int, help="Puerto del peer a agregar.")
+    parser.add_argument("--peer_grpc", help="Puerto del peer a agregar.")
 
     args = parser.parse_args()
 
