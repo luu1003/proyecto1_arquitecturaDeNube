@@ -87,7 +87,7 @@ def upload_file_http(host: str, port: int, filepath: str):
 
 
 # ----------------- gRPC File Transfer -----------------
-def download_file_grpc(peer_host, peer_port, filename, save_dir="downloads"):
+def download_file_grpc(peer_host, peer_port, filename, save_dir="../../../shared_files_peer3"):
     """Descarga un archivo usando gRPC en chunks."""
     os.makedirs(save_dir, exist_ok=True)
     channel = grpc.insecure_channel(f"{peer_host}:{peer_port}")
@@ -150,7 +150,7 @@ if __name__ == "__main__":
                         help="Acción a realizar.")
     parser.add_argument("--filename", help="Nombre del archivo para locate/download.")
     parser.add_argument("--filepath", help="Ruta del archivo para upload.")
-    parser.add_argument("--grpc_port", type=int, default=50053, help="Puerto gRPC del peer.")
+    parser.add_argument("--grpc_port", type=int, default=50051, help="Puerto gRPC del peer.")
     parser.add_argument("--peer_name", help="Nombre del peer a agregar.")
     parser.add_argument("--peer_url", help="IP del peer a agregar.")
     parser.add_argument("--peer_grpc", help="Puerto del peer a agregar.")
@@ -169,7 +169,7 @@ if __name__ == "__main__":
         else:
             locate_file(args.host, args.port, args.filename)
     elif args.action == "add_peer":
-        if not args.peer_name or not args.peer_host or not args.peer_port:
+        if not args.peer_name or not args.peer_url or not args.peer_grcp:
             print("⚠️ Debes indicar --peer_name, --peer_host y --peer_port para agregar un peer")
         else:
             add_peer(args.host, args.port, args.peer_name, args.peer_host, args.peer_port)
@@ -193,5 +193,4 @@ if __name__ == "__main__":
             print("⚠️ Debes indicar --filepath para upload_grpc")
         else:
             upload_file_grpc(args.host, args.grpc_port, args.filepath)
-    
     
