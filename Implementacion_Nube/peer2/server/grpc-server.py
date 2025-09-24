@@ -108,6 +108,12 @@ def refresh_peers():
     """
     Refresca los archivos de todos los peers conocidos.
     """
+
+    global config
+    # Recargar la configuración del JSON cada vez que se refrescan peers
+    config = load_config(CONFIG_PATH)
+
+
     # 1. Actualizar archivos locales
     peer_files[LOCAL_PEER_NAME] = [
         f for f in os.listdir(DIRECTORY) if os.path.isfile(os.path.join(DIRECTORY, f))
@@ -116,7 +122,7 @@ def refresh_peers():
     # 2. Actualizar info de los peers remotos
     for peer in config.get("peers", []):
         try:
-            url = f"http://{peer['ip']}:{peer['port_rest']}/files"
+            url = f"http://{peer['url']}/files"
             resp = requests.get(url, timeout=5)
             if resp.status_code == 200:
                 remote_files = resp.json().get("peer_files", {}).get(peer["name"], [])
