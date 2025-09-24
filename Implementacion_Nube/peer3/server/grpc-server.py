@@ -23,6 +23,9 @@ peer_files = {
     ]
 }
 
+print(peer_files)
+
+
 class FileServiceServicer(grpc_pb2_grpc.FileServiceServicer):
 
     def DownloadFile(self, request, context):

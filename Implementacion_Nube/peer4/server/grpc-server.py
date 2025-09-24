@@ -23,6 +23,8 @@ peer_files = {
     ]
 }
 
+print(peer_files)
+
 # ----------------- Servicio gRPC -----------------
 class FileServiceServicer(grpc_pb2_grpc.FileServiceServicer):
 
