@@ -87,7 +87,7 @@ def upload_file_http(host: str, port: int, filepath: str):
 
 
 # ----------------- gRPC File Transfer -----------------
-def download_file_grpc(peer_host, peer_port, filename, save_dir=".../../server/shared_files_peer1"):
+def download_file_grpc(peer_host, peer_port, filename, save_dir="../../server/shared_files_peer1"):
     """Descarga un archivo usando gRPC en chunks."""
     os.makedirs(save_dir, exist_ok=True)
     channel = grpc.insecure_channel(f"{peer_host}:{peer_port}")
