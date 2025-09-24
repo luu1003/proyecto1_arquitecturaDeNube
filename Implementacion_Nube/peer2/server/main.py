@@ -157,6 +157,11 @@ async def add_peer(peer: dict = Body(...)):
     
     config.setdefault("peers", [])
     config["peers"].append(peer)
+
+    # Guardar cambios en el JSON
+    with open(CONFIG_PATH, "w") as f:
+        json.dump(config, f, indent=4)
+
     await refresh_files()
     return {"status": "ok", "peers": config["peers"]}
 
