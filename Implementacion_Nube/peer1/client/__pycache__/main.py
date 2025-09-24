@@ -167,6 +167,11 @@ if __name__ == "__main__":
             print("⚠️ Debes indicar --filename para locate")
         else:
             locate_file(args.host, args.port, args.filename)
+    elif args.action == "add_peer":
+        if not args.peer_name or not args.peer_host or not args.peer_port:
+            print("⚠️ Debes indicar --peer_name, --peer_host y --peer_port para agregar un peer")
+        else:
+            add_peer(args.host, args.port, args.peer_name, args.peer_host, args.peer_port)
     elif args.action == "download_http":
         if not args.filename:
             print("⚠️ Debes indicar --filename para download_http")
@@ -187,8 +192,4 @@ if __name__ == "__main__":
             print("⚠️ Debes indicar --filepath para upload_grpc")
         else:
             upload_file_grpc(args.host, args.grpc_port, args.filepath)
-    elif args.action == "add_peer":
-        if not args.peer_name or not args.peer_host or not args.peer_port:
-            print("⚠️ Debes indicar --peer_name, --peer_host y --peer_port para agregar un peer")
-        else:
-            add_peer(args.host, args.port, args.peer_name, args.peer_host, args.peer_port)
+    
