@@ -2,7 +2,7 @@ import json
 import os
 import httpx
 from fastapi import FastAPI, Query, UploadFile, File, Body
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 
 # --------- Función para cargar configuración ----------
 def load_config(path: str):
