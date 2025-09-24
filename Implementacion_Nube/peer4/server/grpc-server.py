@@ -10,7 +10,8 @@ def load_config(path: str):
     with open(path, "r") as f:
         return json.load(f)
 
-CONFIG_PATH = os.getenv("CONFIG_PATH", "../server/peer4.json")
+
+CONFIG_PATH = os.getenv("CONFIG_PATH", "peer4.json")
 config = load_config(CONFIG_PATH)
 
 DIRECTORY = "peer4/server/shared_files_peer4"  # Cambia a tu carpeta de peer
@@ -23,7 +24,6 @@ peer_files = {
     ]
 }
 
-print(peer_files)
 
 # ----------------- Servicio gRPC -----------------
 class FileServiceServicer(grpc_pb2_grpc.FileServiceServicer):
@@ -48,6 +48,9 @@ class FileServiceServicer(grpc_pb2_grpc.FileServiceServicer):
             return
 
         # No está local → flooding a otros peers
+
+        print(peer_files)
+        print(config.get("peers"))
 
         for peer in config.get("peers", []):
             try:
