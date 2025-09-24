@@ -150,8 +150,11 @@ async def _stream_remote_file(url: str):
 @app.post("/add_peer")
 async def add_peer(peer: dict = Body(...)):
     """Registrar un peer remoto en la lista de peers conocidos"""
-    if "name" not in peer or "url" not in peer:
-        return {"error": "El peer debe tener 'name' y 'url'"}
+    required_fields = ["name", "url", "url_grpc"]
+    for field in required_fields:
+        if field not in peer:
+            return {"error": f"El peer debe tener '{field}'"}
+    
     config.setdefault("peers", [])
     config["peers"].append(peer)
     await refresh_files()

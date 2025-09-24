@@ -54,7 +54,8 @@ class FileServiceServicer(grpc_pb2_grpc.FileServiceServicer):
 
         for peer in config.get("peers", []):
             try:
-                target = f"{peer['ip']}:{peer['port_grpc']}"
+                target = peer['url_grpc']
+                print(peer['url_grpc'])
                 with grpc.insecure_channel(target) as channel:
                     stub = grpc_pb2_grpc.FileServiceStub(channel)
                     response_stream = stub.DownloadFile(

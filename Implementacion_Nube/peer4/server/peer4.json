@@ -4,7 +4,7 @@
   "port_rest": 5000,
   "port_grpc": 50054,
   "url": "http://107.23.105.160:5004",
-  "url_grpc":"http://54.174.195.157",
+  "url_grpc":"http://54.174.195.157:50054",
   "directory": "peer4/server/shared_files_peer4",
   "peers": [
     { }

@@ -13,7 +13,7 @@ def load_config(path: str):
 CONFIG_PATH = os.getenv("CONFIG_PATH", "peer1.json")
 config = load_config(CONFIG_PATH)
 
-DIRECTORY = "peer1/server/shared_files_peer1"  # Cambia a tu carpeta de peer
+DIRECTORY = "peer1/server/shared_files_peer1"  
 LOCAL_PEER_NAME = "peer1"
 
 # Tabla de archivos conocidos por este peer
@@ -48,12 +48,10 @@ class FileServiceServicer(grpc_pb2_grpc.FileServiceServicer):
 
         # No está local → flooding a otros peers
 
-        print(peer_files)
-        print(config.get("peers"))
-
         for peer in config.get("peers", []):
             try:
-                target = f"{peer['url_grpc']}:{peer['port_grpc']}"
+                target = peer['url_grpc']
+                print(peer['url_grpc'])
                 with grpc.insecure_channel(target) as channel:
                     stub = grpc_pb2_grpc.FileServiceStub(channel)
                     response_stream = stub.DownloadFile(
