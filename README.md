@@ -63,13 +63,18 @@ bash $  pip install -r requirements.txt
 cd peer1/client/__pycache__/
 
 (venv) Listar la red de peers: python main.py --host 172.31.22.148 --port 5001 --action network_list
+
 (venv) Ver estado del peer: python main.py --host 172.31.22.148 --port 5001 --action status
+
 (venv) Listar archivos: python main.py --host 172.31.22.148 --port 5001 --action list
+
 (venv) Localizar un archivo en la red: python main.py --host 172.31.22.148 --port 5001 --action locate --filename ejemplo.txt
+
 (venv) Descargar archivo grpc: python main.py --host 172.31.22.148 --port 5001 --action download_grpc --filename ejemplo.txt
+
 (venv) Subir archivo grpc: python main.py --host 172.31.22.148 --port 5001 --action upload_grpc --filepath /ruta/al/archivo.txt
-(venv) Agregar peer: python main.py --host 172.31.22.148 --port 5001 --action add_peer --peer_name peer2 --peer_url https://172.31.22.148:5002/ --peer_grpc 50052
-{ "name": "peer2", "url": "http://172.31.22.148:5004/", "url_grpc":"172.31.22.148:50054" }
+
+(venv) Agregar peer: python main.py --host 172.31.22.148 --port 5001 --action add_peer --peer_name peer2 --peer_url https://172.31.22.148:5002/ --peer_grpc 172.31.22.148:50054 
 
 ## 🎯 Autoevaluacion
 
