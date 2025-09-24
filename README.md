@@ -121,22 +121,6 @@ python main.py --host 172.31.22.148 --port 5001 --action upload_grpc \
   --filepath /ruta/al/archivo.txt
 
 
----
-
-## 📝 Estructura de Comandos
-
-| Acción | Parámetros Requeridos | Descripción |
-|--------|----------------------|-------------|
-| network_list | - | Lista todos los peers conectados |
-| status | - | Muestra el estado actual del peer |
-| list | - | Lista archivos disponibles |
-| locate | --filename | Busca un archivo específico |
-| download_grpc | --filename | Descarga archivo via gRPC |
-| upload_grpc | --filepath | Sube archivo via gRPC |
-| add_peer | --peer_name, --peer_url, --peer_grpc | Añade nuevo peer |
-
----
-
 ## 🎯 Autoevaluacion
 
 Consideramos que logramos apropiarnos del tema, ya que partimos desde la teoría para luego llevarla a la práctica mediante la implementación de un servicio completo de peer-to-peer. Además, la forma organizada en la que desarrollamos el trabajo nos permite afirmar que cumplimos satisfactoriamente con el 100% de los objetivos planteados.
