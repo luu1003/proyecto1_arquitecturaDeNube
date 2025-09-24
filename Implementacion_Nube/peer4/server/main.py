@@ -81,6 +81,7 @@ async def locate_file(filename: str = Query(...)):
         return {"found": False, "filename": filename}
 
 # --------- Endpoint /download ----------
+@app.get("/download/{filename}")
 async def download_file(filename: str):
     """
     Descargar un archivo.
