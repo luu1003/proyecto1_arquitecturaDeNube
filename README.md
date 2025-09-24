@@ -43,40 +43,99 @@
 ---
 
 ## ⚙️ Usar el sistema Implementacion_Nube
+# 🌩️ Sistema de Implementación en Nube
 
-La implementacion de aws se realizo desde la cuenta de Maria Lucia Cadavid Martinez con el correo: maria.cadavidm@upb.edu.co
+## 📋 Información de la Cuenta
 
-En aws se pueden realizar los siguiente comandos:
+*Cuenta AWS:* Maria Lucia Cadavid Martinez  
+*Correo:* maria.cadavidm@upb.edu.co
 
+---
+
+## 🚀 Configuración Inicial
+
+### 1. Clonar el Repositorio
+bash
 git clone https://github.com/luu1003/proyecto1_arquitecturaDeNube.git
-
 cd proyecto1_arquitecturaDeNube/Implementacion_Nube
 
+
+### 2. Iniciar Contenedores
+bash
 docker-compose up --build --force-recreate
 
--- Ejemplo con el peer #1
 
+---
+
+## 🔧 Configuración del Peer #1
+
+### Acceder al Contenedor
+bash
 docker exec -it peer1 bash
 
-bash $ python3.11 -m venv ~/venv311
-bash $  source ~/venv311/bin/activate
-bash $  pip install -r requirements.txt
 
+### Configurar Entorno Virtual
+bash
+python3.11 -m venv ~/venv311
+source ~/venv311/bin/activate
+pip install -r requirements.txt
 cd peer1/client/__pycache__/
 
-(venv) Listar la red de peers: python main.py --host 172.31.22.148 --port 5001 --action network_list
 
-(venv) Ver estado del peer: python main.py --host 172.31.22.148 --port 5001 --action status
+---
 
-(venv) Listar archivos: python main.py --host 172.31.22.148 --port 5001 --action list
+## 📡 Comandos Disponibles
 
-(venv) Localizar un archivo en la red: python main.py --host 172.31.22.148 --port 5001 --action locate --filename ejemplo.txt
+> *Nota:* Todos los comandos se ejecutan con (venv) activo
 
-(venv) Descargar archivo grpc: python main.py --host 172.31.22.148 --port 5001 --action download_grpc --filename ejemplo.txt
+### 🌐 Gestión de Red
+bash
+# Listar la red de peers
+python main.py --host 172.31.22.148 --port 5001 --action network_list
 
-(venv) Subir archivo grpc: python main.py --host 172.31.22.148 --port 5001 --action upload_grpc --filepath /ruta/al/archivo.txt
+# Ver estado del peer
+python main.py --host 172.31.22.148 --port 5001 --action status
 
-(venv) Agregar peer: python main.py --host 172.31.22.148 --port 5001 --action add_peer --peer_name peer2 --peer_url https://172.31.22.148:5002/ --peer_grpc 172.31.22.148:50054 
+# Agregar nuevo peer
+python main.py --host 172.31.22.148 --port 5001 --action add_peer \
+  --peer_name peer2 \
+  --peer_url https://172.31.22.148:5002/ \
+  --peer_grpc 172.31.22.148:50054
+
+
+### 📁 Gestión de Archivos
+bash
+# Listar archivos disponibles
+python main.py --host 172.31.22.148 --port 5001 --action list
+
+# Localizar archivo en la red
+python main.py --host 172.31.22.148 --port 5001 --action locate \
+  --filename ejemplo.txt
+
+# Descargar archivo (gRPC)
+python main.py --host 172.31.22.148 --port 5001 --action download_grpc \
+  --filename ejemplo.txt
+
+# Subir archivo (gRPC)
+python main.py --host 172.31.22.148 --port 5001 --action upload_grpc \
+  --filepath /ruta/al/archivo.txt
+
+
+---
+
+## 📝 Estructura de Comandos
+
+| Acción | Parámetros Requeridos | Descripción |
+|--------|----------------------|-------------|
+| network_list | - | Lista todos los peers conectados |
+| status | - | Muestra el estado actual del peer |
+| list | - | Lista archivos disponibles |
+| locate | --filename | Busca un archivo específico |
+| download_grpc | --filename | Descarga archivo via gRPC |
+| upload_grpc | --filepath | Sube archivo via gRPC |
+| add_peer | --peer_name, --peer_url, --peer_grpc | Añade nuevo peer |
+
+---
 
 ## 🎯 Autoevaluacion
 
