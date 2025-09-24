@@ -169,7 +169,7 @@ if __name__ == "__main__":
         else:
             locate_file(args.host, args.port, args.filename)
     elif args.action == "add_peer":
-        if not args.peer_name or not args.peer_url or not args.peer_grcp:
+        if not args.peer_name or not args.peer_url or not args.peer_grpc:
             print("⚠️ Debes indicar --peer_name, --peer_host y --peer_port para agregar un peer")
         else:
             add_peer(args.host, args.port, args.peer_name, args.peer_host, args.peer_port)
